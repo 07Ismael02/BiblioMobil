@@ -1,24 +1,25 @@
 package pe.edu.upeu.bibliomobil
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import org.koin.compose.KoinContext
+import org.koin.compose.viewmodel.koinViewModel
+import pe.edu.upeu.bibliomobil.presentation.lector.LectorScreen
+import pe.edu.upeu.bibliomobil.presentation.libro.LibroScreen
 
 @Composable
 fun App() {
-    MaterialTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("BiblioMobil")
-            }
-        }
+    KoinContext {
+        LibroRoute()
     }
+}
+
+@Composable
+private fun LibroRoute(modifier: Modifier = Modifier) {
+    LibroScreen(viewModel = koinViewModel(), modifier = modifier)
+}
+
+@Composable
+private fun LectorRoute(modifier: Modifier = Modifier) {
+    LectorScreen(viewModel = koinViewModel(), modifier = modifier)
 }
