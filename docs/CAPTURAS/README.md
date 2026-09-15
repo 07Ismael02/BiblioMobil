@@ -1,14 +1,14 @@
-# Capturas requeridas
+# Evidencias visuales de BiblioMobil
 
-Guarda en esta carpeta las capturas reales de la aplicación Android con los siguientes nombres. Antes de capturar, comprueba que se vean la barra superior y el contenido principal completo.
+Esta carpeta contiene capturas Android reales obtenidas durante la ejecución manual de la aplicación. Las imágenes se incorporaron sin edición, reconstrucción ni generación artificial.
 
-1. `01-inicio-claro.png`: abre **Inicio**, deja desactivado **Modo oscuro** y muestra la portada junto con los tres accesos rápidos.
-2. `02-inicio-oscuro.png`: abre el menú lateral, activa **Modo oscuro**, ciérralo y captura la misma portada.
-3. `03-libros-cargando.png`: desde una instalación o proceso recién iniciado, entra de inmediato en **Libros** mientras se ven el indicador y el texto **Cargando catálogo…**.
-4. `04-libros-sin-libros.png`: con el repositorio de libros vacío, abre **Libros** y captura el estado **Sin libros**.
-5. `05-libros-con-libros.png`: registra al menos un libro válido y captura el conteo y su tarjeta; conviene usar 2 ejemplares para que también aparezca **Pocos ejemplares**.
-6. `06-libros-error.png`: provoca temporalmente un fallo en `LibroRepositorioEnMemoria.listar()`, abre **Libros** y captura el estado de error con **Reintentar**. Revierte inmediatamente ese cambio y verifica `git diff` antes de continuar; nunca lo confirmes ni lo subas.
-7. `07-lectores-telefono-ausente.png`: registra un lector válido dejando vacío **Teléfono (opcional)** y captura su tarjeta con **No registrado**.
-8. `08-prestamos.png`: abre **Préstamos** y captura el icono, el título **Préstamos en construcción** y su descripción.
+1. `01_inicio_claro.png`: pantalla Inicio en modo claro con la portada y los tres accesos rápidos.
+2. `03_libros_cargando.png`: catálogo durante la fase **Cargando**, con indicador de progreso y el texto **Cargando catálogo…**.
+3. `04_libros_sin_libros.png`: catálogo en la fase **Sin libros**.
+4. `05_libros_con_libros.png`: registro correcto de **Cien años de soledad**, conteo, datos del libro y badge **Pocos ejemplares**.
+5. `06_libros_error.png`: fase de error con **No se pudo cargar el catálogo** y la acción **Reintentar**.
+6. `07_lectores_sin_telefono.png`: lector registrado sin teléfono, mostrado como **No registrado**.
+7. `08_prestamos.png`: módulo con el estado **Préstamos en construcción**.
+8. `09_menu_lateral_oscuro.png`: evidencia adicional del menú lateral, sus cuatro destinos y el interruptor de modo oscuro activado.
 
-No se incluyen imágenes fabricadas. Las ocho capturas deben obtenerse desde la aplicación en ejecución y revisarse antes de la entrega.
+El fallo controlado utilizado temporalmente para capturar la fase Error fue retirado después de obtener la imagen. El código publicado conserva el comportamiento normal del repositorio.
