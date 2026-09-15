@@ -40,9 +40,11 @@ import org.koin.compose.viewmodel.koinViewModel
 import pe.edu.upeu.bibliomobil.navigation.DESTINOS
 import pe.edu.upeu.bibliomobil.navigation.Screen
 import pe.edu.upeu.bibliomobil.navigation.ScreenSaver
+import pe.edu.upeu.bibliomobil.presentation.components.EstadoVacio
 import pe.edu.upeu.bibliomobil.presentation.inicio.InicioScreen
 import pe.edu.upeu.bibliomobil.presentation.lector.LectorScreen
 import pe.edu.upeu.bibliomobil.presentation.libro.LibroScreen
+import pe.edu.upeu.bibliomobil.theme.BiblioMobilTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,59 +58,61 @@ fun App() {
         val scope = rememberCoroutineScope()
         val destinoActual = DESTINOS.first { it.screen == pantallaActual }
 
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet {
-                    Column(modifier = Modifier.fillMaxHeight().padding(16.dp)) {
-                        Text("BiblioMobil", style = MaterialTheme.typography.headlineSmall)
-                        Text(
-                            "Biblioteca Central",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                        DESTINOS.forEach { destino ->
-                            NavigationDrawerItem(
-                                label = { Text(destino.titulo) },
-                                selected = pantallaActual == destino.screen,
-                                onClick = {
-                                    pantallaActual = destino.screen
-                                    scope.launch { drawerState.close() }
-                                },
-                                icon = { Icon(destino.icono, contentDescription = destino.titulo) }
+        BiblioMobilTheme(darkTheme = darkTheme) {
+            ModalNavigationDrawer(
+                drawerState = drawerState,
+                drawerContent = {
+                    ModalDrawerSheet {
+                        Column(modifier = Modifier.fillMaxHeight().padding(16.dp)) {
+                            Text("BiblioMobil", style = MaterialTheme.typography.headlineSmall)
+                            Text(
+                                "Biblioteca Central",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(bottom = 16.dp)
                             )
-                        }
-                        Spacer(Modifier.weight(1f))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Modo oscuro")
-                            Switch(checked = darkTheme, onCheckedChange = { darkTheme = it })
+                            DESTINOS.forEach { destino ->
+                                NavigationDrawerItem(
+                                    label = { Text(destino.titulo) },
+                                    selected = pantallaActual == destino.screen,
+                                    onClick = {
+                                        pantallaActual = destino.screen
+                                        scope.launch { drawerState.close() }
+                                    },
+                                    icon = { Icon(destino.icono, contentDescription = destino.titulo) }
+                                )
+                            }
+                            Spacer(Modifier.weight(1f))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Modo oscuro")
+                                Switch(checked = darkTheme, onCheckedChange = { darkTheme = it })
+                            }
                         }
                     }
                 }
-            }
-        ) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(
-                        title = { Text(destinoActual.titulo) },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Abrir menú")
+            ) {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text(destinoActual.titulo) },
+                            navigationIcon = {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(Icons.Default.Menu, contentDescription = "Abrir menú")
+                                }
                             }
+                        )
+                    }
+                ) { paddingValues ->
+                    Box(Modifier.fillMaxSize().padding(paddingValues)) {
+                        when (pantallaActual) {
+                            Screen.Inicio -> InicioScreen(onNavegar = { pantallaActual = it })
+                            Screen.Libros -> LibroScreen(viewModel = koinViewModel())
+                            Screen.Lectores -> LectorScreen(viewModel = koinViewModel())
+                            Screen.Prestamos -> PrestamosScreen()
                         }
-                    )
-                }
-            ) { paddingValues ->
-                Box(Modifier.fillMaxSize().padding(paddingValues)) {
-                    when (pantallaActual) {
-                        Screen.Inicio -> InicioScreen(onNavegar = { pantallaActual = it })
-                        Screen.Libros -> LibroScreen(viewModel = koinViewModel())
-                        Screen.Lectores -> LectorScreen(viewModel = koinViewModel())
-                        Screen.Prestamos -> PrestamosScreen()
                     }
                 }
             }
@@ -118,13 +122,10 @@ fun App() {
 
 @Composable
 private fun PrestamosScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(Icons.Default.Bookmark, contentDescription = null)
-        Text("Préstamos en construcción", style = MaterialTheme.typography.headlineSmall)
-        Text("El módulo de préstamos estará disponible en una próxima versión.")
-    }
+    EstadoVacio(
+        icono = Icons.Default.Bookmark,
+        titulo = "Préstamos en construcción",
+        descripcion = "El módulo de préstamos estará disponible en una próxima versión.",
+        modifier = Modifier.fillMaxSize()
+    )
 }

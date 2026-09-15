@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import pe.edu.upeu.bibliomobil.presentation.components.EstadoVacio
+import pe.edu.upeu.bibliomobil.presentation.components.MensajeExito
+import pe.edu.upeu.bibliomobil.presentation.components.ValidatedTextField
 
 @Composable
 fun LibroScreen(viewModel: LibroViewModel, modifier: Modifier = Modifier) {
@@ -43,7 +47,7 @@ fun LibroScreen(viewModel: LibroViewModel, modifier: Modifier = Modifier) {
             onRegistrar = viewModel::registrar
         )
         estado.mensajeExito?.let {
-            Text(it, color = MaterialTheme.colorScheme.primary)
+            MensajeExito(it)
         }
 
         when (val fase = estado.fase) {
@@ -56,14 +60,12 @@ fun LibroScreen(viewModel: LibroViewModel, modifier: Modifier = Modifier) {
                 Text("Cargando catálogo…", modifier = Modifier.padding(top = 8.dp))
             }
 
-            FaseLibros.SinLibros -> Column(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("0 libros", style = MaterialTheme.typography.titleMedium)
-                Text("Sin libros")
-            }
+            FaseLibros.SinLibros -> EstadoVacio(
+                icono = Icons.AutoMirrored.Filled.MenuBook,
+                titulo = "Sin libros",
+                descripcion = "Aún no hay libros registrados en el catálogo.",
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            )
 
             is FaseLibros.ConLibros -> {
                 Text(
@@ -78,16 +80,18 @@ fun LibroScreen(viewModel: LibroViewModel, modifier: Modifier = Modifier) {
                 }
             }
 
-            is FaseLibros.Error -> Column(
+            is FaseLibros.Error -> EstadoVacio(
+                icono = Icons.AutoMirrored.Filled.MenuBook,
+                titulo = fase.mensaje,
+                descripcion = "Intenta cargar el catálogo nuevamente.",
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(fase.mensaje, color = MaterialTheme.colorScheme.error)
-                Button(onClick = viewModel::cargarLibros, modifier = Modifier.padding(top = 8.dp)) {
-                    Text("Reintentar")
+                color = MaterialTheme.colorScheme.error,
+                accion = {
+                    Button(onClick = viewModel::cargarLibros) {
+                        Text("Reintentar")
+                    }
                 }
-            }
+            )
         }
     }
 }
@@ -107,24 +111,36 @@ private fun FormularioLibroCard(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            CampoFormulario(formulario.titulo, onTituloChange, "Título", formulario.errorTitulo)
-            CampoFormulario(formulario.autor, onAutorChange, "Autor", formulario.errorAutor)
+            ValidatedTextField(
+                formulario.titulo,
+                onTituloChange,
+                "Título",
+                formulario.errorTitulo,
+                Modifier.fillMaxWidth()
+            )
+            ValidatedTextField(
+                formulario.autor,
+                onAutorChange,
+                "Autor",
+                formulario.errorAutor,
+                Modifier.fillMaxWidth()
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                CampoFormulario(
+                ValidatedTextField(
                     formulario.anio,
                     onAnioChange,
                     "Año",
                     formulario.errorAnio,
                     Modifier.weight(1f),
-                    KeyboardType.Number
+                    KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
-                CampoFormulario(
+                ValidatedTextField(
                     formulario.ejemplares,
                     onEjemplaresChange,
                     "Ejemplares",
                     formulario.errorEjemplares,
                     Modifier.weight(1f),
-                    KeyboardType.Number
+                    KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
             Button(
@@ -136,27 +152,6 @@ private fun FormularioLibroCard(
             }
         }
     }
-}
-
-@Composable
-private fun CampoFormulario(
-    valor: String,
-    onValorChange: (String) -> Unit,
-    etiqueta: String,
-    error: String?,
-    modifier: Modifier = Modifier.fillMaxWidth(),
-    keyboardType: KeyboardType = KeyboardType.Text
-) {
-    OutlinedTextField(
-        value = valor,
-        onValueChange = onValorChange,
-        label = { Text(etiqueta) },
-        isError = error != null,
-        supportingText = error?.let { mensaje -> ({ Text(mensaje) }) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = true,
-        modifier = modifier
-    )
 }
 
 @Composable
